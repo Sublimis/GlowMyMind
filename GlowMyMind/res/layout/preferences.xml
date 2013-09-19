@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_enabled_key"
+        android:summary="@string/pref_enabled_summary"
+        android:title="@string/pref_enabled_title" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:dependency="@string/pref_enabled_key"
+        android:key="@string/pref_screen_key"
+        android:summary="@string/pref_screen_summary"
+        android:title="@string/pref_screen_title" />
+
+    <ListPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="500"
+        android:dependency="@string/pref_enabled_key"
+        android:dialogTitle="@string/pref_duration_title"
+        android:entries="@array/pref_duration_entries"
+        android:entryValues="@array/pref_duration_values"
+        android:key="@string/pref_duration_key"
+        android:summary="@string/pref_duration_summary"
+        android:title="@string/pref_duration_title" />
+
+    <PreferenceCategory>
+        <PreferenceScreen
+            android:summary="@string/pref_test_summary"
+            android:title="@string/pref_test_title" >
+
+            <intent android:action=".GlowingActivity" />
+        </PreferenceScreen>
+    </PreferenceCategory>
+
+</PreferenceScreen>
