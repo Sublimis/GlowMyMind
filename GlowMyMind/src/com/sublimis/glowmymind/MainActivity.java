@@ -20,6 +20,7 @@
 package com.sublimis.glowmymind;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.text.Html;
@@ -38,15 +39,40 @@ public class MainActivity extends PreferenceActivity
 	{
 		super.onCreate(savedInstanceState);
 
-		// Load the preferences from an XML resource
-		addPreferencesFromResource(R.layout.preferences);
+		boolean isTest = false;
 		
+		Intent intent = getIntent();
+		
+		if (intent != null)
+		{
+			Bundle extras = intent.getExtras();
+			
+			if (extras != null)
+			{
+				isTest = extras.getBoolean("test", false);
+				
+				if (isTest)
+				{
+					Magic magic = new Magic(this);
+					magic.doTheMagic();
+					
+					finish();
+				}
+			}
+		}
+		
+		if (!isTest)
+		{
+			// Load the preferences from an XML resource
+			addPreferencesFromResource(R.layout.preferences);
+		}
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		menu.add(Menu.NONE, 0, 0, R.string.optmenu_about_text).setIcon(R.drawable.ic_menu_info_details);
+		menu.add(Menu.NONE, 1, Menu.NONE, R.string.optmenu_share_text).setIcon(android.R.drawable.ic_menu_share);
+		menu.add(Menu.NONE, 0, Menu.NONE, R.string.optmenu_about_text).setIcon(R.drawable.ic_menu_info_details);
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -58,6 +84,9 @@ public class MainActivity extends PreferenceActivity
 		{
 		case 0:
 			dialogAbout();
+			return true;
+		case 1:
+			dialogShare();
 			return true;
 		}
 		return false;
@@ -99,5 +128,17 @@ public class MainActivity extends PreferenceActivity
 	private void dialogAbout()
 	{
 		showDialog(0);
+	}
+
+	private void dialogShare()
+	{
+		Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+		if (sharingIntent != null)
+		{
+			sharingIntent.setType("text/plain");
+			sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getText(R.string.share_subject));
+			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getText(R.string.app_link));
+			startActivity(Intent.createChooser(sharingIntent, getResources().getText(R.string.share_title)));
+		}
 	}
 }

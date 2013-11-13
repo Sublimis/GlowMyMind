@@ -104,8 +104,28 @@ public class MyPreference
 		return retVal;
 	}
 	
-	public static boolean isCheckScreen()
+	public static boolean isScreenEnabled()
 	{
 		return getBooleanPref(R.string.pref_screen_key, true);
+	}
+	
+	public static boolean isCheckScreen()
+	{
+		return getBooleanPref(R.string.pref_screenstate_key, true);
+	}
+	
+	public static boolean isCheckProximity()
+	{
+		return getBooleanPref(R.string.pref_proximity_key, true);
+	}
+	
+	public static boolean isObscuredFlashlight()
+	{
+		return getBooleanPref(R.string.pref_obscuredflash_key, true);
+	}
+	
+	public static boolean isFlashlightEnabled()
+	{
+		return getBooleanPref(R.string.pref_flashlight_key, true);
 	}
 }

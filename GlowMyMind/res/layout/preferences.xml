@@ -11,15 +11,43 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
-        android:dependency="@string/pref_enabled_key"
+        android:key="@string/pref_flashlight_key"
+        android:summary="@string/pref_flashlight_summary"
+        android:title="@string/pref_flashlight_title"
+        android:dependency="@string/pref_enabled_key" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
         android:key="@string/pref_screen_key"
         android:summary="@string/pref_screen_summary"
-        android:title="@string/pref_screen_title" />
-
+        android:title="@string/pref_screen_title"
+        android:dependency="@string/pref_enabled_key" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_screenstate_key"
+        android:summary="@string/pref_screenstate_summary"
+        android:title="@string/pref_screenstate_title"
+        android:dependency="@string/pref_screen_key" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_proximity_key"
+        android:summary="@string/pref_proximity_summary"
+        android:title="@string/pref_proximity_title"
+        android:dependency="@string/pref_screen_key" />
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="@string/pref_obscuredflash_key"
+        android:summary="@string/pref_obscuredflash_summary"
+        android:title="@string/pref_obscuredflash_title"
+        android:dependency="@string/pref_proximity_key" />
+    
     <ListPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:defaultValue="500"
+        android:defaultValue="700"
         android:dependency="@string/pref_enabled_key"
         android:dialogTitle="@string/pref_duration_title"
         android:entries="@array/pref_duration_entries"
@@ -33,7 +61,9 @@
             android:summary="@string/pref_test_summary"
             android:title="@string/pref_test_title" >
 
-            <intent android:action=".GlowingActivity" />
+            <intent android:action=".MainActivity">
+                <extra android:name="test" android:value="true" />
+            </intent>
         </PreferenceScreen>
     </PreferenceCategory>
 

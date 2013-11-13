@@ -1,25 +1,42 @@
 <resources>
 
     <string name="app_name">Glowing Message Alert</string>
-
+    <string name="app_link">https://play.google.com/store/apps/details?id=com.sublimis.glowmymind</string>
+    
     <string name="copyright_part1">Glowing Message Alert&lt;br /&gt;Version: &lt;b&gt;%1$s&lt;/b&gt; (%2$s)</string>
     <string name="copyright_part2">
         © 2013 Sublimis Solutions\n\n
-        This tiny app will issue a burst of bright screen light when SMS or MMS is received.
+        This tiny app will briefly flash a bright screen or flashlight when SMS or MMS is received.
         It\'s useful in quiet or dark environments, even when the phone is out of direct sight.\n\n
         <a href="https://play.google.com/store/apps/details?id=com.sublimis.glowmymind">Rate and comment</a>\nTell us what you think\n\n
         Thank you for using the program!
     </string>
     
     <string name="pref_enabled_key">Enable</string>
-    <string name="pref_duration_key">Duration</string>
     <string name="pref_screen_key">Screen</string>
+    <string name="pref_screenstate_key">ScreenState</string>
+    <string name="pref_proximity_key">Proximity</string>
+    <string name="pref_obscuredflash_key">ObscuredFlash</string>
+    <string name="pref_flashlight_key">Flashlight</string>
+    <string name="pref_duration_key">Duration</string>
     
     <string name="pref_enabled_title">Enable</string>
     <string name="pref_enabled_summary">Enable or disable the application</string>
     
-    <string name="pref_screen_title">Only when screen is off</string>
-    <string name="pref_screen_summary">Glow only when phone is not being used, ie. screen is turned off</string>
+    <string name="pref_screen_title">Enable screen glow</string>
+    <string name="pref_screen_summary">Use display screen for glowing</string>
+    
+    <string name="pref_screenstate_title">Only when screen is off</string>
+    <string name="pref_screenstate_summary">Glow only when phone is not being used, ie. screen is turned off</string>
+    
+    <string name="pref_proximity_title">Only if not obscured</string>
+    <string name="pref_proximity_summary">Glow only when proximity sensor tells that no object is obscuring the screen</string>
+    
+    <string name="pref_obscuredflash_title">Flashlight if screen obscured</string>
+    <string name="pref_obscuredflash_summary">Glow the camera flashlight if screen is obscured</string>
+    
+    <string name="pref_flashlight_title">Enable flashlight glow</string>
+    <string name="pref_flashlight_summary">Use camera flashlight for glowing</string>
     
     <string name="pref_duration_title">Glow duration</string>
     <string name="pref_duration_summary">Pick duration of the glow burst</string>
@@ -27,5 +44,10 @@
     <string name="pref_test_title">Test</string>
     <string name="pref_test_summary">See how this looks like</string>
     
+    <string name="optmenu_share_text">Share</string>
     <string name="optmenu_about_text">About</string>
+    
+    <string name="share_title">Send to</string>
+    <string name="share_subject">@string/app_name</string>
+    
 </resources>
