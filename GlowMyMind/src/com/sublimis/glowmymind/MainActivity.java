@@ -22,6 +22,7 @@ package com.sublimis.glowmymind;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
@@ -65,9 +66,49 @@ public class MainActivity extends PreferenceActivity
 		{
 			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.layout.preferences);
+			
+			MyPreference.setContext(this);
+
+			updateGlowDurationPrefSummary(MyPreference.getGlowDuration());			
+
+			MyPrefChangeListener myPrefChangeListener = new MyPrefChangeListener();
+
+			Preference pref = null;
+			
+			pref = findPreference(getResources().getString(R.string.pref_duration_key));
+			if (pref != null)
+			{
+				pref.setOnPreferenceChangeListener(myPrefChangeListener);
+			}
 		}
 	}
 	
+	private class MyPrefChangeListener implements Preference.OnPreferenceChangeListener
+	{
+		@Override
+		public boolean onPreferenceChange(Preference preference, Object newValue)
+		{
+			boolean retVal = true;
+			
+			if (getResources().getString(R.string.pref_duration_key).equals(preference.getKey()))
+			{
+				int newDuration = -1;
+				
+				try
+				{
+					newDuration = Integer.valueOf((String) newValue);
+				}
+				catch (RuntimeException e)
+				{
+				}
+				
+				updateGlowDurationPrefSummary(newDuration);			
+			}
+
+			return retVal;
+		}
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
@@ -139,6 +180,35 @@ public class MainActivity extends PreferenceActivity
 			sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, getResources().getText(R.string.share_subject));
 			sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getResources().getText(R.string.app_link));
 			startActivity(Intent.createChooser(sharingIntent, getResources().getText(R.string.share_title)));
+		}
+	}
+
+	private void updateGlowDurationPrefSummary(int duration)
+	{
+		Preference pref = findPreference(getResources().getString(R.string.pref_duration_key));
+		
+		if (pref != null)
+		{
+			String[] entries = getResources().getStringArray(R.array.pref_duration_entries);
+			String[] values = getResources().getStringArray(R.array.pref_duration_values);
+			String summary = "";
+
+			for (int i=0; i < values.length; i++)
+			{
+				try
+				{
+					if (duration == Integer.valueOf(values[i]))
+					{
+						summary = entries[i];
+						break;
+					}
+				}
+				catch (RuntimeException e)
+				{
+				}
+			}
+			
+			((Preference) pref).setSummary(summary);
 		}
 	}
 }

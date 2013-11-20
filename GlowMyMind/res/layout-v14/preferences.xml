@@ -5,7 +5,7 @@
 
     <PreferenceCategory android:title="@string/pref_category1_title" >
         
-    <CheckBoxPreference
+    <SwitchPreference
         android:defaultValue="true"
         android:key="@string/pref_enabled_key"
         android:title="@string/pref_enabled_title" />
