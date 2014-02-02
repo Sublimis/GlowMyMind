@@ -1,5 +1,5 @@
 /*
-    Copyright 2013. Sublimis Solutions
+    Copyright 2014. Sublimis Solutions
 
     This file is part of GlowMyMind.
 
@@ -37,8 +37,7 @@ public class Receiver extends BroadcastReceiver
 			// We want action for both SMS and MMS messages
 			if (SMS_RECEIVED.equals(intent.getAction()) || WAP_PUSH_RECEIVED.equals(intent.getAction()))
 			{
-				Magic magic = new Magic(context);
-				magic.doTheMagic();
+				MagicService.startService(context, false);
 			}
 		}
 		catch (RuntimeException e)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2013. Sublimis Solutions
+    Copyright 2014. Sublimis Solutions
 
     This file is part of GlowMyMind.
 

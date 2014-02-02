@@ -1,16 +1,16 @@
 <resources>
 
 <string-array name="pref_duration_entries">
-    <item>Dafuq? (0.1 s)</item>
-    <item>Wuzzat? (0.2 s)</item>
-    <item>Bruce Lee (0.3 s)</item>
-    <item>Normal (0.5 s)</item>
-    <item>Abnormal (0.7 s)</item>
-    <item>Imma bit slow (1.0 s)</item>
+    <item>Bruce Lee (.1 s)</item>
+    <item>Blink (.2 s)</item>
+    <item>Wuzzat? (.3 s)</item>
+    <item>Paranormal (.5 s)</item>
+    <item>Normal (.7 s)</item>
+    <item>Abnormal (1 s)</item>
     <item>Sunday morning (1.5 s)</item>
-    <item>Sunrise (2.0 s)</item>
-    <item>High noon (3.0 s)</item>
-    <item>Pls make it stop (5.0 s)</item>
+    <item>Sunrise (2 s)</item>
+    <item>High noon (3 s)</item>
+    <item>Pls make it stop (5 s)</item>
     <item>Just turn the screen on</item>
 </string-array>
 

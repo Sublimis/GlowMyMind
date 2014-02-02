@@ -1,5 +1,5 @@
 /*
-    Copyright 2013. Sublimis Solutions
+    Copyright 2014. Sublimis Solutions
 
     This file is part of GlowMyMind.
 
@@ -21,8 +21,8 @@ package com.sublimis.glowmymind;
 
 public class Config
 {
-	public static final String version = "1.7.1";
-	public static final String versionDate = "2013–11–13";
+	public static final String version = "1.7.2";
+	public static final String versionDate = "2014–02–02";
 	
-	public static final int glowDurationDefault = 500;
+	public static final int glowDurationDefault = 700;
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2013. Sublimis Solutions
+    Copyright 2014. Sublimis Solutions
 
     This file is part of GlowMyMind.
 
@@ -19,11 +19,11 @@
 
 package com.sublimis.glowmymind;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -32,15 +32,11 @@ import com.sublimis.glowmymind.R;
 
 public class GlowingActivity extends Activity
 {
-	public static final int TIMER_PERIOD = 25;
-
 	public static int DURATION = Config.glowDurationDefault;
 	
-    private Timer mTimer = null;
-    private TimerRefreshJob mTimerTask = null;
-    private boolean mTimerEngaged = false;
-    
-    @Override
+	private Handler mHandler = new Handler();
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -63,88 +59,55 @@ public class GlowingActivity extends Activity
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
 		
-		setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+			setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
 	}
 
+	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus)
 	{
 		super.onWindowFocusChanged(hasFocus);
 		
-		if (hasFocus && !mTimerEngaged)
+		if (hasFocus)
 		{
-			setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
-			
-			mTimer = new Timer();
-			mTimerTask = new TimerRefreshJob();
-	
-			try
+			new Thread()
 			{
-				if (mTimer != null)
-					mTimer.schedule(mTimerTask, 0, TIMER_PERIOD);
-				
-				mTimerEngaged = true;
-			}
-			catch (IllegalArgumentException e)
-			{
-			}
-			catch (IllegalStateException e)
-			{
-			}
+				@Override
+				public void run()
+		        {
+					if (mHandler != null)
+					{
+						mHandler.postDelayed(new Runnable()
+						{
+							public void run()
+							{
+								finishMe();
+							}
+						}, DURATION);
+					}
+		        }
+			}.start();
 		}
 	}
 
     @Override
     public void onDestroy()
     {
-		if (mTimerTask != null)
-			mTimerTask.cancel();
-		
-		mTimerTask = null;
-
-		if (mTimer != null)
-			mTimer.cancel();
-		
-		mTimer = null;
-		
 		super.onDestroy();
     }
-    
-	private final class TimerRefreshJob extends TimerTask
-	{
-	    private long mTimeElapse = 0;
-		
-		@Override
-		public void run()
-		{
-		    if (mTimeElapse >= DURATION)
-			{
-				if (mTimerTask != null)
-					mTimerTask.cancel();
-
-				Runnable runnable = new Runnable()
-				{
-					public void run()
-					{
-						finishMe();
-					}
-				};
-				
-				runOnUiThread(runnable);
-			}
-			
-			mTimeElapse += TIMER_PERIOD;
-		}
-	}
 	
+	@TargetApi(Build.VERSION_CODES.FROYO)
 	private void finishMe()
 	{
-		setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
+			setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
 
 		finish();
 	}

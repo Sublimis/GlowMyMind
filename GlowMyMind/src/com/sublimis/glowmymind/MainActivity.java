@@ -1,5 +1,5 @@
 /*
-    Copyright 2013. Sublimis Solutions
+    Copyright 2014. Sublimis Solutions
 
     This file is part of GlowMyMind.
 
@@ -54,8 +54,9 @@ public class MainActivity extends PreferenceActivity
 				
 				if (isTest)
 				{
+//					MagicService.startService(this, true);
 					Magic magic = new Magic(this);
-					magic.doTheMagic();
+					magic.doTheMagic(true);
 					
 					finish();
 				}

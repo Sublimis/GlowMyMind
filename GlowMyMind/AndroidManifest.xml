@@ -3,14 +3,14 @@
     
     package="com.sublimis.glowmymind"
     
-    android:versionCode="9"
-    android:versionName="1.7.1"
+    android:versionCode="10"
+    android:versionName="1.7.2"
     android:installLocation="auto"
     >
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.RECEIVE_SMS"/>
     <uses-permission android:name="android.permission.RECEIVE_MMS"/>
@@ -61,7 +61,18 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
+        
+        <service
+            android:label="@string/app_name"
+            android:name=".MagicService"
+		    android:exported="false"
+            >
+            <intent-filter>
+                <action android:name=".MagicService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+        
         <receiver android:name=".Receiver">
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />

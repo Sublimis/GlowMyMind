@@ -1,5 +1,5 @@
 /*
-    Copyright 2013. Sublimis Solutions
+    Copyright 2014. Sublimis Solutions
 
     This file is part of GlowMyMind.
 
@@ -19,6 +19,10 @@
 
 package com.sublimis.glowmymind;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
@@ -26,38 +30,46 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Handler;
 import android.os.PowerManager;
+import android.widget.Toast;
 
 public class Magic implements SensorEventListener
 {
 	private Context mContext = null;
 	
-	private final int proximityDistanceThreshold = 3;	// centimeters
-	private final int proximityDistanceCount = 1;		// how many times to poll the sensor
-														// must be 1, otherwise will block
+	private float proximityDistanceThreshold = 3;	// centimeters
 
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
 
-	private float mProximityDistance[] = new float[proximityDistanceCount];
-	private int mSensorEventCounter = 0;
-	private volatile boolean isListening = false;
-	private Handler mHandler = new Handler();
+	private float mProximityDistance = -1;
+	private boolean mIsTest = false;
+	
+	private ScheduledThreadPoolExecutor mScheduledExecutor = new ScheduledThreadPoolExecutor(1);
+	
 	private Runnable mRunnable = new Runnable()
 	{
 		@Override
 		public void run()
 		{
-			if (isListening)
+			if (mProximityDistance >= proximityDistanceThreshold)
 			{
-				finishMe();
-				
+				callFurtherActivity();
+			}
+			else
+			{
 				if (MyPreference.isObscuredFlashlight() && !MyPreference.isFlashlightEnabled())
 				{
 					flashlightGlow();
 				}
+				
+				if (mIsTest)
+				{
+					outputError(R.string.toast_screen_obscured);
+				}
 			}
+			
+			finishMe();
 		}
 	};
 
@@ -65,7 +77,7 @@ public class Magic implements SensorEventListener
 	{
 		if (context != null)
 		{
-			mContext = context.getApplicationContext();
+			mContext = context;
 
 			MyPreference.setContext(context);
 		}
@@ -80,38 +92,9 @@ public class Magic implements SensorEventListener
 	@Override
 	public void onSensorChanged(SensorEvent event)
 	{
-		if (isListening)
-		{
-			if (mSensorEventCounter < proximityDistanceCount)
-				mProximityDistance[mSensorEventCounter++] = event.values[0];
+		mProximityDistance = event.values[0];
 			
-			if (mSensorEventCounter >= proximityDistanceCount)
-			{
-				isListening = false;
-				
-				boolean okToProceed = true;
-				
-				for (float value : mProximityDistance)
-				{
-					if (value < proximityDistanceThreshold)
-					{
-						okToProceed = false;
-						break;
-					}
-				}
-				
-				finishMe();
-				
-				if (okToProceed)
-				{
-					callFurtherActivity();
-				}
-				else if (MyPreference.isObscuredFlashlight() && !MyPreference.isFlashlightEnabled())
-				{
-					flashlightGlow();
-				}
-			}
-		}
+//		isListening = false;
 	}
 	
 	private void engageProximitySensor()
@@ -125,15 +108,18 @@ public class Magic implements SensorEventListener
 			
 			if (mSensor != null)
 			{
-				isListening = true;
-
+				float maxRange = mSensor.getMaximumRange();
+				
+				if (maxRange < proximityDistanceThreshold)
+					proximityDistanceThreshold = maxRange;
+				
 				// rate parameter really does nothing
 				mSensorManager.registerListener(this, mSensor, 0);
 
-				if (mHandler != null && mRunnable != null)
+				if (mScheduledExecutor != null && mRunnable != null)
 				{
-					// needed because sensor will sometimes fail to deliver the initial event
-					mHandler.postDelayed(mRunnable, 500);
+					// needed because sensor will sometimes fail to deliver the (initial) event
+					mScheduledExecutor.schedule(mRunnable, 500, TimeUnit.MILLISECONDS);
 				}
 			}
 		}
@@ -159,13 +145,13 @@ public class Magic implements SensorEventListener
 		return retVal;
 	}
 	
-	private boolean isScreenStateOk(Context context)
+	private boolean isScreenStateOk(Context context, boolean isTest)
 	{
 		boolean retVal = false;
 		
 		if (MyPreference.isScreenEnabled())
 		{
-			if (MyPreference.isCheckScreen())
+			if (MyPreference.isCheckScreen() && !isTest)
 			{
 				if (!isScreenOn(context))
 					retVal = true;
@@ -240,27 +226,28 @@ public class Magic implements SensorEventListener
 		}.start();
 	}
 	
-	public void doTheMagic()
+	public void doTheMagic(boolean isTest)
 	{
 		if (mContext != null)
 		{
+			mIsTest = isTest;
 			final Context context = mContext;
 			
 			if (MyPreference.isEnabled())
 			{
-				if (MyPreference.isScreenEnabled() && isScreenStateOk(context))
+				boolean waitForSensor = false;
+				
+				if (MyPreference.isScreenEnabled() && isScreenStateOk(context, isTest))
 				{
 					if (MyPreference.isCheckProximity())
 					{
-						mSensorEventCounter = 0;
-						for (int i = 0; i < proximityDistanceCount; i++)
-						{
-							mProximityDistance[i] = -1;
-						}
-
 						engageProximitySensor();
 						
-						if (mSensorManager == null || mSensor == null)
+						if (mSensorManager != null && mSensor != null)
+						{
+							waitForSensor = true;
+						}
+						else
 						{
 							finishMe();
 
@@ -277,6 +264,25 @@ public class Magic implements SensorEventListener
 				{
 					flashlightGlow();
 				}
+				
+				if (isTest && !(MyPreference.isScreenEnabled() && isScreenStateOk(context, isTest)) && !MyPreference.isFlashlightEnabled())
+				{
+					outputError(R.string.toast_all_disabled);
+				}
+				
+				if (waitForSensor)
+				{
+					try
+					{
+						Thread.sleep(600);
+					}
+					catch (InterruptedException e)
+					{}
+				}
+			}
+			else if (isTest)
+			{
+				outputError(R.string.toast_app_disabled);
 			}
 		}
 	}
@@ -312,12 +318,10 @@ public class Magic implements SensorEventListener
 	
 	private synchronized void cleanupAllForFinish()
 	{
-		isListening = false;
-		
-		if (mHandler != null)
+		if (mScheduledExecutor != null)
 		{
-			mHandler.removeCallbacks(mRunnable);
-			mHandler = null;
+			mScheduledExecutor.shutdown();
+			mScheduledExecutor = null;
 		}
 		
 		if (mSensorManager != null)
@@ -330,5 +334,30 @@ public class Magic implements SensorEventListener
 	private synchronized void finishMe()
 	{
 		cleanupAllForFinish();
+	}
+
+	private void outputToast(final int textResId, final boolean shortDuration)
+	{
+		if (mContext instanceof Activity)
+		{
+			((Activity) mContext).runOnUiThread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try
+					{
+						Toast.makeText(mContext, textResId, shortDuration ? Toast.LENGTH_SHORT : Toast.LENGTH_LONG).show();
+					}
+					catch (Exception e)
+					{}
+				}
+			});
+		}
+	}
+	
+	private void outputError(final int textResId)
+	{
+		outputToast(textResId, false);
 	}
 }
