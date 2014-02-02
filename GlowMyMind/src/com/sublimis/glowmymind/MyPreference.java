@@ -31,10 +31,9 @@ public class MyPreference
 
 	public synchronized static void setContext(Context context)
 	{
-		if (mContext == null)
-			mContext = context.getApplicationContext();
+		if (mContext == null) mContext = context.getApplicationContext();
 	}
-	
+
 	private static SharedPreferences getPrefs()
 	{
 		if (mContext != null)
@@ -50,40 +49,39 @@ public class MyPreference
 		else
 			return null;
 	}
-	
+
 	private static String getStringResource(int resId)
 	{
 		Resources res = getResources();
-		
+
 		if (res != null)
 			return res.getString(resId);
 		else
 			return null;
 	}
-	
+
 	private static boolean getBooleanPref(int prefKeyResId, boolean defaultValue)
 	{
 		String prefKey = getStringResource(prefKeyResId);
 		SharedPreferences sharedPrefs = getPrefs();
-		
+
 		if (sharedPrefs != null)
 			return sharedPrefs.getBoolean(prefKey, defaultValue);
 		else
 			return defaultValue;
 	}
-	
+
 	public static String getStringPref(int prefKeyResId, String defaultValue)
 	{
 		String prefKey = getStringResource(prefKeyResId);
 		SharedPreferences sharedPrefs = getPrefs();
-		
+
 		if (sharedPrefs != null)
 			return sharedPrefs.getString(prefKey, defaultValue);
 		else
 			return defaultValue;
 	}
-	
-	
+
 	public static boolean isEnabled()
 	{
 		return getBooleanPref(R.string.pref_enabled_key, true);
@@ -92,38 +90,37 @@ public class MyPreference
 	public static int getGlowDuration()
 	{
 		int retVal = Config.glowDurationDefault;
-		
+
 		try
 		{
 			retVal = Integer.valueOf(getStringPref(R.string.pref_duration_key, Integer.toString(Config.glowDurationDefault)));
 		}
 		catch (RuntimeException e)
-		{
-		}
-		
+		{}
+
 		return retVal;
 	}
-	
+
 	public static boolean isScreenEnabled()
 	{
 		return getBooleanPref(R.string.pref_screen_key, true);
 	}
-	
+
 	public static boolean isCheckScreen()
 	{
 		return getBooleanPref(R.string.pref_screenstate_key, true);
 	}
-	
+
 	public static boolean isCheckProximity()
 	{
 		return getBooleanPref(R.string.pref_proximity_key, true);
 	}
-	
+
 	public static boolean isObscuredFlashlight()
 	{
 		return getBooleanPref(R.string.pref_obscuredflash_key, true);
 	}
-	
+
 	public static boolean isFlashlightEnabled()
 	{
 		return getBooleanPref(R.string.pref_flashlight_key, true);

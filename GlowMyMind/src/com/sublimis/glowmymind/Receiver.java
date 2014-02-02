@@ -29,19 +29,20 @@ public class Receiver extends BroadcastReceiver
 	public static final String WAP_PUSH_RECEIVED = "android.provider.Telephony.WAP_PUSH_RECEIVED";
 
 	@Override
-    public void onReceive(Context context, Intent intent)
-    {
+	public void onReceive(Context context, Intent intent)
+	{
 		try
 		{
 			if (context != null && intent != null)
-			// We want action for both SMS and MMS messages
-			if (SMS_RECEIVED.equals(intent.getAction()) || WAP_PUSH_RECEIVED.equals(intent.getAction()))
 			{
-				MagicService.startService(context, false);
+				// We want action for both SMS and MMS messages
+				if (SMS_RECEIVED.equals(intent.getAction()) || WAP_PUSH_RECEIVED.equals(intent.getAction()))
+				{
+					MagicService.startService(context, false);
+				}
 			}
 		}
 		catch (RuntimeException e)
-		{
-		}
-    }
+		{}
+	}
 }

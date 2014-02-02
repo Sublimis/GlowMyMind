@@ -19,9 +19,7 @@
 
 package com.sublimis.glowmymind;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
@@ -33,7 +31,7 @@ import com.sublimis.glowmymind.R;
 public class GlowingActivity extends Activity
 {
 	public static int DURATION = Config.glowDurationDefault;
-	
+
 	private Handler mHandler = new Handler();
 
 	@Override
@@ -47,41 +45,40 @@ public class GlowingActivity extends Activity
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-		
+
 		setContentView(R.layout.glowing);
-		
+
 		MyPreference.setContext(this);
 		DURATION = MyPreference.getGlowDuration();
-		
+
 		if (DURATION <= 0)
 		{
 			finishMe();
 		}
 	}
 
-	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
 	protected void onResume()
 	{
 		super.onResume();
-		
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
-			setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+
+		setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
 	}
 
-	@TargetApi(Build.VERSION_CODES.FROYO)
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus)
 	{
 		super.onWindowFocusChanged(hasFocus);
-		
+
 		if (hasFocus)
 		{
 			new Thread()
 			{
 				@Override
 				public void run()
-		        {
+				{
+					setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+
 					if (mHandler != null)
 					{
 						mHandler.postDelayed(new Runnable()
@@ -92,26 +89,35 @@ public class GlowingActivity extends Activity
 							}
 						}, DURATION);
 					}
-		        }
+					else
+					{
+						try
+						{
+							Thread.sleep(DURATION);
+						}
+						catch (InterruptedException e)
+						{}
+
+						finishMe();
+					}
+				}
 			}.start();
 		}
 	}
 
-    @Override
-    public void onDestroy()
-    {
+	@Override
+	public void onDestroy()
+	{
 		super.onDestroy();
-    }
-	
-	@TargetApi(Build.VERSION_CODES.FROYO)
+	}
+
 	private void finishMe()
 	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO)
-			setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+		setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
 
 		finish();
 	}
-	
+
 	private void setScreenBrightness(float screenBrightness)
 	{
 		LayoutParams params = getWindow().getAttributes();

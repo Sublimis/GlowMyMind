@@ -27,7 +27,7 @@ import com.sublimis.glowmymind.R;
 
 public class WakingActivity extends Activity
 {
-    @Override
+	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -36,7 +36,7 @@ public class WakingActivity extends Activity
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
-		
+
 		setContentView(R.layout.waking);
 	}
 
@@ -52,9 +52,9 @@ public class WakingActivity extends Activity
 		finish();
 	}
 
-    @Override
-    public void onDestroy()
-    {
+	@Override
+	public void onDestroy()
+	{
 		super.onDestroy();
-    }
+	}
 }

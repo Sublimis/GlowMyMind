@@ -36,17 +36,17 @@ import android.widget.Toast;
 public class Magic implements SensorEventListener
 {
 	private Context mContext = null;
-	
-	private float proximityDistanceThreshold = 3;	// centimeters
+
+	private float proximityDistanceThreshold = 3; // centimeters
 
 	private SensorManager mSensorManager;
 	private Sensor mSensor;
 
 	private float mProximityDistance = -1;
 	private boolean mIsTest = false;
-	
+
 	private ScheduledThreadPoolExecutor mScheduledExecutor = new ScheduledThreadPoolExecutor(1);
-	
+
 	private Runnable mRunnable = new Runnable()
 	{
 		@Override
@@ -62,13 +62,13 @@ public class Magic implements SensorEventListener
 				{
 					flashlightGlow();
 				}
-				
+
 				if (mIsTest)
 				{
 					outputError(R.string.toast_screen_obscured);
 				}
 			}
-			
+
 			finishMe();
 		}
 	};
@@ -82,8 +82,8 @@ public class Magic implements SensorEventListener
 			MyPreference.setContext(context);
 		}
 	}
-	
-    @Override
+
+	@Override
 	public void onAccuracyChanged(Sensor sensor, int accuracy)
 	{
 		// must be here
@@ -93,78 +93,75 @@ public class Magic implements SensorEventListener
 	public void onSensorChanged(SensorEvent event)
 	{
 		mProximityDistance = event.values[0];
-			
-//		isListening = false;
+
+		// isListening = false;
 	}
-	
+
 	private void engageProximitySensor()
 	{
-		if (mContext != null)
-			mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-		
+		if (mContext != null) mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+
 		if (mSensorManager != null)
 		{
 			mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-			
+
 			if (mSensor != null)
 			{
 				float maxRange = mSensor.getMaximumRange();
-				
-				if (maxRange < proximityDistanceThreshold)
-					proximityDistanceThreshold = maxRange;
-				
+
+				if (maxRange < proximityDistanceThreshold) proximityDistanceThreshold = maxRange;
+
 				// rate parameter really does nothing
 				mSensorManager.registerListener(this, mSensor, 0);
 
 				if (mScheduledExecutor != null && mRunnable != null)
 				{
-					// needed because sensor will sometimes fail to deliver the (initial) event
+					// needed because sensor will sometimes fail to deliver the
+					// (initial) event
 					mScheduledExecutor.schedule(mRunnable, 500, TimeUnit.MILLISECONDS);
 				}
 			}
 		}
 	}
-	
+
 	private boolean isScreenOn(Context context)
 	{
 		boolean retVal = false;
-		
+
 		try
 		{
 			PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-			
+
 			if (pm != null)
 			{
-				retVal =  pm.isScreenOn();
+				retVal = pm.isScreenOn();
 			}
 		}
 		catch (RuntimeException e)
-		{
-		}
-		
+		{}
+
 		return retVal;
 	}
-	
+
 	private boolean isScreenStateOk(Context context, boolean isTest)
 	{
 		boolean retVal = false;
-		
+
 		if (MyPreference.isScreenEnabled())
 		{
 			if (MyPreference.isCheckScreen() && !isTest)
 			{
-				if (!isScreenOn(context))
-					retVal = true;
+				if (!isScreenOn(context)) retVal = true;
 			}
 			else
 			{
 				retVal = true;
 			}
 		}
-		
+
 		return retVal;
 	}
-	
+
 	private void flashlightGlow()
 	{
 		new Thread()
@@ -174,19 +171,19 @@ public class Magic implements SensorEventListener
 				Camera camera = null;
 				boolean flashOn = false;
 				final int duration = MyPreference.getGlowDuration();
-				
+
 				if (duration > 0)
 				{
 					try
 					{
 						camera = Camera.open();
-						
+
 						Camera.Parameters param = camera.getParameters();
 						param.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
 						camera.setParameters(param);
-	
+
 						camera.startPreview();
-	
+
 						flashOn = true;
 					}
 					catch (Exception e)
@@ -196,10 +193,9 @@ public class Magic implements SensorEventListener
 							camera.release();
 						}
 						catch (Exception ex)
-						{
-						}
+						{}
 					}
-					
+
 					if (flashOn)
 					{
 						try
@@ -207,10 +203,9 @@ public class Magic implements SensorEventListener
 							Thread.sleep(duration);
 						}
 						catch (InterruptedException e)
-						{
-						}
+						{}
 					}
-					
+
 					if (camera != null)
 					{
 						try
@@ -218,31 +213,30 @@ public class Magic implements SensorEventListener
 							camera.release();
 						}
 						catch (Exception e)
-						{
-						}
+						{}
 					}
 				}
 			}
 		}.start();
 	}
-	
+
 	public void doTheMagic(boolean isTest)
 	{
 		if (mContext != null)
 		{
 			mIsTest = isTest;
 			final Context context = mContext;
-			
+
 			if (MyPreference.isEnabled())
 			{
 				boolean waitForSensor = false;
-				
+
 				if (MyPreference.isScreenEnabled() && isScreenStateOk(context, isTest))
 				{
 					if (MyPreference.isCheckProximity())
 					{
 						engageProximitySensor();
-						
+
 						if (mSensorManager != null && mSensor != null)
 						{
 							waitForSensor = true;
@@ -264,12 +258,12 @@ public class Magic implements SensorEventListener
 				{
 					flashlightGlow();
 				}
-				
+
 				if (isTest && !(MyPreference.isScreenEnabled() && isScreenStateOk(context, isTest)) && !MyPreference.isFlashlightEnabled())
 				{
 					outputError(R.string.toast_all_disabled);
 				}
-				
+
 				if (waitForSensor)
 				{
 					try
@@ -292,9 +286,9 @@ public class Magic implements SensorEventListener
 		if (mContext != null)
 		{
 			Context context = mContext;
-			
+
 			MyPreference.setContext(context);
-			
+
 			if (MyPreference.getGlowDuration() > 0)
 			{
 				Intent myIntent = new Intent(context, GlowingActivity.class);
@@ -315,7 +309,7 @@ public class Magic implements SensorEventListener
 			}
 		}
 	}
-	
+
 	private synchronized void cleanupAllForFinish()
 	{
 		if (mScheduledExecutor != null)
@@ -323,14 +317,14 @@ public class Magic implements SensorEventListener
 			mScheduledExecutor.shutdown();
 			mScheduledExecutor = null;
 		}
-		
+
 		if (mSensorManager != null)
 		{
 			mSensorManager.unregisterListener(this);
 			mSensorManager = null;
 		}
 	}
-	
+
 	private synchronized void finishMe()
 	{
 		cleanupAllForFinish();
@@ -355,7 +349,7 @@ public class Magic implements SensorEventListener
 			});
 		}
 	}
-	
+
 	private void outputError(final int textResId)
 	{
 		outputToast(textResId, false);

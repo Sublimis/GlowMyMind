@@ -34,17 +34,17 @@ public class MagicService extends IntentService
 	{
 		super(MagicService.class.getName());
 	}
-	
+
 	public static void startService(Context context, boolean isTest)
 	{
-        Intent intent = new Intent(INTENT_ACTION);
-        intent.putExtra(ACTION_COMMAND, COMMAND_DO_MAGIC);
-        intent.putExtra(TEST_MODE_EXTRA, isTest);
-        
+		Intent intent = new Intent(INTENT_ACTION);
+		intent.putExtra(ACTION_COMMAND, COMMAND_DO_MAGIC);
+		intent.putExtra(TEST_MODE_EXTRA, isTest);
+
 		intent.setClassName(context, MagicService.class.getName());
 		context.startService(intent);
 	}
-	
+
 	@Override
 	public final void onHandleIntent(Intent intent)
 	{
@@ -55,7 +55,7 @@ public class MagicService extends IntentService
 				MyPreference.setContext(this);
 
 				int command = intent.getIntExtra(ACTION_COMMAND, -1);
-				
+
 				switch (command)
 				{
 				case COMMAND_DO_MAGIC:
@@ -63,16 +63,15 @@ public class MagicService extends IntentService
 
 					Magic magic = new Magic(this);
 					magic.doTheMagic(isTest);
-					
+
 					break;
-				
+
 				default:
-		        	break;
+					break;
 				}
 			}
 		}
-		catch(Exception e)
-		{
-		}
+		catch (Exception e)
+		{}
 	}
 }

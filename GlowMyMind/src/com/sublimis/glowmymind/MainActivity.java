@@ -41,41 +41,39 @@ public class MainActivity extends PreferenceActivity
 		super.onCreate(savedInstanceState);
 
 		boolean isTest = false;
-		
+
 		Intent intent = getIntent();
-		
+
 		if (intent != null)
 		{
 			Bundle extras = intent.getExtras();
-			
+
 			if (extras != null)
 			{
 				isTest = extras.getBoolean("test", false);
-				
+
 				if (isTest)
 				{
-//					MagicService.startService(this, true);
 					Magic magic = new Magic(this);
 					magic.doTheMagic(true);
-					
+
 					finish();
 				}
 			}
 		}
-		
+
 		if (!isTest)
 		{
-			// Load the preferences from an XML resource
 			addPreferencesFromResource(R.layout.preferences);
-			
+
 			MyPreference.setContext(this);
 
-			updateGlowDurationPrefSummary(MyPreference.getGlowDuration());			
+			updateGlowDurationPrefSummary(MyPreference.getGlowDuration());
 
 			MyPrefChangeListener myPrefChangeListener = new MyPrefChangeListener();
 
 			Preference pref = null;
-			
+
 			pref = findPreference(getResources().getString(R.string.pref_duration_key));
 			if (pref != null)
 			{
@@ -83,27 +81,26 @@ public class MainActivity extends PreferenceActivity
 			}
 		}
 	}
-	
+
 	private class MyPrefChangeListener implements Preference.OnPreferenceChangeListener
 	{
 		@Override
 		public boolean onPreferenceChange(Preference preference, Object newValue)
 		{
 			boolean retVal = true;
-			
+
 			if (getResources().getString(R.string.pref_duration_key).equals(preference.getKey()))
 			{
 				int newDuration = -1;
-				
+
 				try
 				{
 					newDuration = Integer.valueOf((String) newValue);
 				}
 				catch (RuntimeException e)
-				{
-				}
-				
-				updateGlowDurationPrefSummary(newDuration);			
+				{}
+
+				updateGlowDurationPrefSummary(newDuration);
 			}
 
 			return retVal;
@@ -131,9 +128,10 @@ public class MainActivity extends PreferenceActivity
 			dialogShare();
 			return true;
 		}
+		
 		return false;
 	}
-	
+
 	protected Dialog onCreateDialog(int id)
 	{
 		Dialog dialog = null;
@@ -143,27 +141,27 @@ public class MainActivity extends PreferenceActivity
 		case 0:
 			{
 				dialog = new Dialog(this);
-	
+
 				dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 				dialog.setContentView(R.layout.dialog_about);
-	
+
 				TextView textView = (TextView) dialog.findViewById(R.id.aboutText1);
 				String text = getResources().getString(R.string.copyright_part1);
 				textView.setText(Html.fromHtml(String.format(text, Config.version, Config.versionDate)));
-	
+
 				textView = (TextView) dialog.findViewById(R.id.aboutText2);
 				textView.setText(R.string.copyright_part2);
 				textView.setMovementMethod(LinkMovementMethod.getInstance());
-	
+
 				ImageView image = (ImageView) dialog.findViewById(R.id.logoIcon);
 				image.setImageResource(R.drawable.icon);
 			}
 			break;
-			
+
 		default:
 			break;
 		}
-		
+
 		return dialog;
 	}
 
@@ -187,14 +185,14 @@ public class MainActivity extends PreferenceActivity
 	private void updateGlowDurationPrefSummary(int duration)
 	{
 		Preference pref = findPreference(getResources().getString(R.string.pref_duration_key));
-		
+
 		if (pref != null)
 		{
 			String[] entries = getResources().getStringArray(R.array.pref_duration_entries);
 			String[] values = getResources().getStringArray(R.array.pref_duration_values);
 			String summary = "";
 
-			for (int i=0; i < values.length; i++)
+			for (int i = 0; i < values.length; i++)
 			{
 				try
 				{
@@ -205,10 +203,9 @@ public class MainActivity extends PreferenceActivity
 					}
 				}
 				catch (RuntimeException e)
-				{
-				}
+				{}
 			}
-			
+
 			((Preference) pref).setSummary(summary);
 		}
 	}
