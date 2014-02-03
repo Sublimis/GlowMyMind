@@ -21,8 +21,8 @@ package com.sublimis.glowmymind;
 
 public class Config
 {
-	public static final String version = "1.7.2";
-	public static final String versionDate = "2014–02–02";
+	public static final String version = "1.7.3";
+	public static final String versionDate = "2014–02–03";
 
 	public static final int glowDurationDefault = 700;
 }
