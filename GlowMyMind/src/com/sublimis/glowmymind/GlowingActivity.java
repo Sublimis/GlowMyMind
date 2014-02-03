@@ -72,13 +72,13 @@ public class GlowingActivity extends Activity
 
 		if (hasFocus)
 		{
+			setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
+
 			new Thread()
 			{
 				@Override
 				public void run()
 				{
-					setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_FULL);
-
 					if (mHandler != null)
 					{
 						mHandler.postDelayed(new Runnable()
@@ -113,15 +113,29 @@ public class GlowingActivity extends Activity
 
 	private void finishMe()
 	{
-		setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				setScreenBrightness(LayoutParams.BRIGHTNESS_OVERRIDE_NONE);
 
-		finish();
+				finish();
+			}
+		});
 	}
 
-	private void setScreenBrightness(float screenBrightness)
+	private void setScreenBrightness(final float screenBrightness)
 	{
-		LayoutParams params = getWindow().getAttributes();
-		params.screenBrightness = screenBrightness;
-		getWindow().setAttributes(params);
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				LayoutParams params = getWindow().getAttributes();
+				params.screenBrightness = screenBrightness;
+				getWindow().setAttributes(params);
+			}
+		});
 	}
 }
